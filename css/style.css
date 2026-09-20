@@ -1,0 +1,622 @@
+/* ============================================================
+   个人简历项目 · style.css
+   结构：字体 → 设计变量 → 基础样式 → 通用组件 → 各栏目 → 动效
+         → 深色模式 → 打印样式 → 无障碍与减弱动效
+   ============================================================ */
+
+/* ---------- 1. 自定义字体（思源宋体，本地自托管） ---------- */
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("../assets/noto-serif-sc-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("../assets/noto-serif-sc-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- 2. 设计变量（换主题只需改这里） ---------- */
+:root {
+  --bg: #fbfaf6;
+  --bg-translucent: rgba(251, 250, 246, 0.88);
+  --surface: #ffffff;
+  --ink: #343c38;
+  --ink-soft: #6d746d;
+  --heading: #254a40;
+  --accent: #42635b;
+  --accent-strong: #2f5148;
+  --gold: #b8a27d;
+  --tint: #edf1ea;
+  --line: #e1ddd3;
+  --radius: 16px;
+  --shadow: 0 12px 32px rgba(52, 60, 56, 0.08);
+  --shadow-lg: 0 18px 40px rgba(52, 60, 56, 0.14);
+  --font-body: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --font-heading: "Noto Serif SC", "Songti SC", "SimSun", serif;
+}
+
+/* ---------- 3. 基础样式 ---------- */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.9 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; }
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--heading);
+  line-height: 1.4;
+  margin: 0;
+}
+
+p { margin: 0 0 12px; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--accent); }
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section[id] { scroll-margin-top: 90px; } /* 锚点定位时给吸顶导航留出空间 */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 12px;
+  z-index: 100;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--heading);
+  color: var(--surface);
+  text-decoration: none;
+}
+.skip-link:focus { left: 12px; }
+
+/* ---------- 4. 顶部导航 ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-translucent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--heading);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.site-nav a {
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 15px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.site-nav a:hover { background: var(--tint); color: var(--heading); }
+.site-nav a.is-active { background: var(--tint); color: var(--heading); font-weight: 600; }
+
+/* 移动端菜单按钮（桌面隐藏） */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.nav-toggle-box { display: grid; gap: 5px; }
+.nav-toggle-bar {
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--heading);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+body.nav-open .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.nav-open .nav-toggle-bar:nth-child(2) { opacity: 0; }
+body.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .nav-toggle { display: inline-flex; }
+  .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 16px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  body.nav-open .site-nav { display: flex; }
+  .site-nav a { padding: 12px 14px; }
+}
+
+/* ---------- 5. 首屏 Hero ---------- */
+.hero { padding: 72px 0 16px; }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 6px;
+}
+
+.hero h1 {
+  font-size: 52px;
+  font-weight: 600;
+}
+.hero-en {
+  margin-left: 16px;
+  font-size: 26px;
+  color: var(--gold);
+}
+
+.hero-role {
+  margin: 10px 0 16px;
+  color: var(--accent);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.hero-summary { max-width: 560px; color: var(--ink-soft); }
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 11px 26px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.btn-primary { background: var(--heading); color: var(--surface); }
+.btn-primary:hover {
+  background: var(--accent-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.btn-ghost { border-color: var(--gold); color: var(--heading); }
+.btn-ghost:hover { background: var(--tint); transform: translateY(-2px); }
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+}
+.hero-meta li {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.hero-visual { justify-self: center; }
+.hero-visual img {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 6px solid var(--surface);
+  box-shadow: var(--shadow-lg);
+  background: var(--tint);
+}
+
+@media (max-width: 860px) {
+  .hero { padding-top: 48px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+  .hero-visual { order: -1; justify-self: start; }
+  .hero-visual img { width: 140px; height: 140px; border-width: 4px; }
+  .hero h1 { font-size: 38px; }
+  .hero-en { font-size: 20px; margin-left: 12px; }
+}
+
+/* ---------- 6. 通用栏目 ---------- */
+.section { padding: 60px 0 12px; }
+
+.section-heading { margin-bottom: 28px; }
+
+.section-heading h2 {
+  display: inline-block;
+  padding: 8px 18px;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  background: var(--tint);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.section-sub {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* ---------- 7. 关于我 ---------- */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.about-text { color: var(--ink-soft); }
+
+.about-facts { display: grid; gap: 12px; margin: 0; }
+.about-facts > div {
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.about-facts dt {
+  color: var(--ink-soft);
+  font-size: 13px;
+  letter-spacing: 3px;
+}
+.about-facts dd {
+  margin: 4px 0 0;
+  color: var(--heading);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .about-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- 8. 技能卡片 ---------- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.skill-card {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.skill-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+.skill-card h3 { margin-bottom: 8px; font-size: 20px; }
+.skill-card p { color: var(--ink-soft); font-size: 15px; }
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+.tag-list li {
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+/* ---------- 9. 项目经历 / 教育经历 ---------- */
+.project-list { display: grid; gap: 20px; }
+
+.project-item {
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.project-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.project-head h3 { font-size: 21px; }
+.project-head time {
+  color: var(--ink-soft);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.project-item > p { color: var(--ink-soft); }
+
+/* ---------- 10. 作品集 ---------- */
+.portfolio-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.work-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.work-card:hover,
+.work-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.work-card a { display: block; color: inherit; text-decoration: none; }
+
+.work-cover {
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--tint);
+}
+.work-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-copy { padding: 20px 22px 24px; }
+.work-copy h3 { font-size: 20px; margin-bottom: 6px; }
+.work-copy p { color: var(--ink-soft); font-size: 15px; }
+
+.work-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+.work-card:hover .work-link { color: var(--heading); }
+
+@media (max-width: 640px) {
+  .portfolio-list { grid-template-columns: 1fr; }
+}
+
+/* ---------- 11. 成长记录（时间线） ---------- */
+.record-list {
+  display: grid;
+  gap: 22px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 4px 26px;
+  border-left: 2px solid var(--gold);
+}
+.record-list li { position: relative; }
+.record-list li::before {
+  content: "";
+  position: absolute;
+  left: -33px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 3px solid var(--bg);
+}
+.record-time {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+.record-list p { margin-top: 2px; color: var(--ink-soft); }
+
+/* ---------- 12. 联系方式 ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 26px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+a.contact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+.contact-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--heading);
+}
+
+.contact-label { color: var(--ink-soft); font-size: 13px; letter-spacing: 2px; }
+.contact-value { color: var(--heading); font-weight: 600; }
+
+/* ---------- 13. 页脚 ---------- */
+.site-footer { margin-top: 72px; border-top: 1px solid var(--line); }
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 26px 0 40px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.footer-inner p { margin: 0; }
+.footer-inner a { color: var(--accent); text-decoration: none; }
+.footer-inner a:hover { color: var(--heading); text-decoration: underline; }
+
+/* ---------- 14. 滚动渐显动效（由 main.js 添加类名触发） ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* ---------- 15. 深色模式 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c211e;
+    --bg-translucent: rgba(28, 33, 30, 0.88);
+    --surface: #262d29;
+    --ink: #e4e8e2;
+    --ink-soft: #a4aca4;
+    --heading: #a8cdbd;
+    --accent: #8fb8aa;
+    --accent-strong: #a8cdbd;
+    --gold: #c4ad85;
+    --tint: #2b332f;
+    --line: #3a423d;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+  .tag-list li { background: var(--surface); }
+}
+
+/* ---------- 16. 打印样式（Ctrl+P 可直接输出纸质简历） ---------- */
+@media print {
+  @page { margin: 16mm; }
+
+  .site-header,
+  .nav-toggle,
+  .hero-actions,
+  .hero-visual,
+  .site-footer,
+  .skip-link { display: none !important; }
+
+  body { background: #fff; color: #000; font-size: 12pt; }
+  h1, h2, h3 { color: #000; }
+
+  .hero { padding-top: 0; }
+  .section { padding: 18px 0 6px; }
+  .section-heading { margin-bottom: 14px; }
+
+  .skill-card,
+  .project-item,
+  .work-card,
+  .contact-card,
+  .about-facts > div {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  .work-cover { display: none; } /* 纸质简历不需要作品截图 */
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- 17. 键盘焦点与减弱动效 ---------- */
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
